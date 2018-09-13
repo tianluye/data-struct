@@ -31,4 +31,3 @@ hs_err_pid*
 # other
 mybatis-gen.xml
 #logback.xml
-data/
