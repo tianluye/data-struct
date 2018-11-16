@@ -262,3 +262,41 @@ A的幂集个数就等于 2^A集合元素的个数，和 A集合的个数的二�
 
 集合 A有 n个元素，按照上面构造出的二叉树，就有 2^n个叶子节点，
 根据叶子节点逐级遍历父亲节点，就可以得到其幂集元素。
+
+#### 11、八皇后问题求解
+
+构造 n皇后在棋盘中的位置，其中要满足以下条件：
+
+1. 每两个皇后不能再同一列同一行出现
+2. 皇后不能处于对角线上
+
+这样皇后在棋盘中的位置一定是：每一行、每一列有且只能存在一个皇后。所以可以将问题抽象成：
+从第一行一直到最后一行，依次放入一个皇后，且要满足上面的 2个条件。最后一个皇后落下且满足
+条件的，就是八皇后问题的一个解。
+
+按照上面的思路，递归求解是一个很好的选择。
+
+```
+public static boolean isLocationValid(int posX, int posY) {
+    ......
+    return false;
+}
+
+public static void explore(int deep) {
+    for (int i = 0; i < queenNum; i++) {
+        boolean isValid = isLocationValid(i, deep);
+        if (isValid) {
+            if (deep == queenNum - 1) {
+                输出八皇后解;
+                continue;
+            } 
+            explore(deep + 1);
+        }
+    }
+}
+```
+
+利用队列来实现八皇后求解问题，和递归求解一样，将每一步正确的步骤放到一个队列里，判断是否
+合法，需要依赖于队列最前面的那个元素去进行判断。
+
+实现代码：com.data.struct.tree.EightQueen

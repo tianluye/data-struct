@@ -8,6 +8,8 @@ public class EightQueen {
         solveEightQueen(8);
     }
 
+    /** *********************  八皇后队列求解  *********************************************** **/
+
     /**
      * 根节点，空棋盘
      */
@@ -16,7 +18,7 @@ public class EightQueen {
     /**
      * 构造 n皇后在棋盘中的位置，其中要满足以下条件：
      * 1. 每两个皇后不能再同一列同一行出现
-     * 2. 皇后不能全部处于对角线上
+     * 2. 皇后不能处于对角线上
      *
      * @param queenNum 皇后数量
      */
@@ -24,6 +26,7 @@ public class EightQueen {
         // 满足规则放置棋子的队列
         Queue<Node> nodeQueue = new LinkedList<>();
         nodeQueue.add(root);
+        int methodNum = 0;
         while (nodeQueue.size() != 0) {
             Node queen = nodeQueue.poll();
             // 棋盘上的皇后数量要小于总皇后数量
@@ -37,11 +40,9 @@ public class EightQueen {
                     List<Integer> existedYList = new ArrayList<>();
                     existedYList.addAll(queen.existedYList);
                     // 若尝试放的位置已经不满足条件，则进行下一个的位置尝试
-                    if (existedXList.size() > 0 && existedYList.size() > 0) {
-                        boolean isExisted = existedXList.contains(i) || existedYList.contains(posY);
-                        if (isExisted) {
-                            continue;
-                        }
+                    boolean isValid = locationIsValid(i, posY, queen, queenNum);
+                    if (!isValid) {
+                        continue;
                     }
                     // 若满足，则将皇后放入该位置
                     Node nextQueen = new Node();
@@ -56,20 +57,51 @@ public class EightQueen {
                     if (posY != queenNum.intValue()) {
                         nodeQueue.add(nextQueen);
                     } else {
-                        // 判断已经全部落下的皇后位置是否是在对角线上
-                        // 其特征：existedXList和 existedYList要么相等，要么相反
-                        if (!nextQueen.existedXList.equals(nextQueen.existedYList)) {
-                            Collections.reverse(nextQueen.existedXList);
-                            boolean flag = nextQueen.existedXList.equals(nextQueen.existedYList);
-                            if (!flag) {
-                                System.out.println(nextQueen);
-                                printEightQueen(nextQueen);
-                            }
-                        }
+                        printEightQueen(nextQueen);
+                        methodNum++;
                     }
                 }
             }
         }
+        System.out.println(methodNum);
+    }
+
+    public static boolean locationIsValid(Integer posX, Integer posY, Node queen, Integer queenNum) {
+        List<Integer> existedXList = new ArrayList<>();
+        existedXList.addAll(queen.existedXList);
+        List<Integer> existedYList = new ArrayList<>();
+        existedYList.addAll(queen.existedYList);
+        // 棋盘上第一个皇后落下，合法
+        if (existedXList.size() == 0 || existedYList.size() == 0) {
+            return true;
+        }
+        // 落下的皇后不能与已经在棋盘上的皇后处于同一列或同一行
+        boolean isExisted = existedXList.contains(posX) || existedYList.contains(posY);
+        if (isExisted) {
+            return false;
+        }
+        // 当前落子位置，不能与之前已经落子的皇后位置处于斜角为位置，包括右上角左上角
+        Integer tempX = posX;
+        Integer tempY = posY;
+        while (tempX > 1) {
+            isExisted = (existedXList.indexOf(tempX - 1) == existedYList.indexOf(tempY - 1)) && (existedXList.indexOf(tempX - 1) != -1);
+            if (isExisted) {
+                return false;
+            }
+            tempX--;
+            tempY--;
+        }
+        Integer _tempX = posX;
+        Integer _tempY = posY;
+        while (_tempX < queenNum) {
+            isExisted = (existedXList.indexOf(_tempX + 1) == existedYList.indexOf(_tempY - 1)) && (existedXList.indexOf(_tempX + 1) != -1);
+            if (isExisted) {
+                return false;
+            }
+            _tempX++;
+            _tempY--;
+        }
+        return true;
     }
 
     public static void printEightQueen(Node queen) {
@@ -83,7 +115,7 @@ public class EightQueen {
         for (int i = 0; i < deep; i++) {
             Integer x = queen.existedXList.get(i);
             Integer y = queen.existedYList.get(i);
-            queenMap[x - 1][y - 1] = "♘";
+            queenMap[x - 1][y - 1] = "■";
         }
         for (int i = 0; i < deep; i++) {
             for (int j = 0; j < deep; j++) {
@@ -91,6 +123,7 @@ public class EightQueen {
             }
             System.out.println();
         }
+        System.out.println("---------------");
     }
 
 
